@@ -27,28 +27,30 @@ let currentChart = null;
 // TOAST NOTIFICATION SYSTEM
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
-    toast.className = `pointer-events-auto flex items-center p-4 rounded-xl shadow-lg border transform translate-y-2 opacity-0 transition-all duration-300 ease-out text-sm font-medium `;
+
+    // Perbaikan Layout: Menggunakan w-auto (lebar mengikuti teks) dan max-w-[calc(100vw-40px)] agar aman di HP
+    toast.className = `pointer-events-auto flex items-center p-3.5 px-4 rounded-xl shadow-xl border transform translate-y-2 opacity-0 transition-all duration-300 ease-out text-xs font-semibold w-auto max-w-[calc(100vw-40px)] sm:max-w-xs ml-auto`;
 
     if (type === 'success') {
-        toast.className += 'bg-emerald-50 dark:bg-emerald-950/90 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200';
-        toast.innerHTML = `<i class="fa-solid fa-circle-check text-base mr-2.5"></i> ${message}`;
+        toast.className += 'bg-emerald-500/10 dark:bg-emerald-950/90 border-emerald-500/30 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400';
+        toast.innerHTML = `<i class="fa-solid fa-circle-check text-sm mr-2.5 flex-shrink-0"></i> <span class="truncate">${message}</span>`;
     } else {
-        toast.className += 'bg-rose-50 dark:bg-rose-950/90 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200';
-        toast.innerHTML = `<i class="fa-solid fa-circle-xmark text-base mr-2.5"></i> ${message}`;
+        toast.className += 'bg-rose-500/10 dark:bg-rose-950/90 border-rose-500/30 dark:border-rose-800 text-rose-600 dark:text-rose-400';
+        toast.innerHTML = `<i class="fa-solid fa-circle-xmark text-sm mr-2.5 flex-shrink-0"></i> <span class="truncate">${message}</span>`;
     }
 
     toastContainer.appendChild(toast);
 
-    // Trigger animation frame entry
+    // Animasi masuk
     setTimeout(() => {
         toast.classList.remove('translate-y-2', 'opacity-0');
     }, 10);
 
-    // Remove toast container after 3.5 seconds smoothly
+    // Animasi keluar dan hapus elemen setelah 3 detik
     setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-[-8px]');
+        toast.classList.add('opacity-0', 'scale-95');
         setTimeout(() => toast.remove(), 300);
-    }, 3500);
+    }, 3000);
 }
 
 // Dark / Light Theme Setup
