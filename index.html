@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Premium Expense & Budget Visualizer</title>
 
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -15,155 +21,256 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body
-    class="text-slate-100 min-h-screen antialiased selection:bg-indigo-500 selection:text-white pb-12"
+    class="text-slate-800 dark:text-slate-200 min-h-screen antialiased selection:bg-indigo-500 selection:text-white pb-12"
   >
+    <!-- Toast Notification Container -->
+    <div
+      id="toast-container"
+      class="fixed top-5 right-5 z-50 space-y-3 max-w-sm w-full pointer-events-none"
+    ></div>
+
+    <!-- Navbar / Header -->
     <header
       class="max-w-6xl mx-auto px-4 pt-8 pb-4 flex justify-between items-center"
     >
       <div>
         <h1
-          class="text-2xl font-bold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+          class="text-2xl font-bold tracking-tight bg-gradient-to-r from-amber-600 via-pink-600 to-indigo-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent"
         >
           Financely.
         </h1>
-        <p class="text-xs text-slate-400 mt-1">
-          Expense & Budget Visualizer Dashboard
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          Premium Financial Analytics Ecosystem
         </p>
       </div>
-      <div
-        class="flex items-center gap-2 bg-slate-800/60 border border-slate-700/50 px-3 py-1.5 rounded-full text-xs text-slate-300"
-      >
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        Local Storage Active
+      <div class="flex items-center gap-3">
+        <button
+          id="theme-toggle"
+          class="w-10 h-10 rounded-xl bg-white/80 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-sm hover:scale-105 transition-all"
+        >
+          <i id="theme-icon" class="fa-solid fa-sun"></i>
+        </button>
+        <div
+          class="hidden sm:flex items-center gap-2 bg-white/80 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700/50 px-3 py-1.5 rounded-full text-xs text-slate-600 dark:text-slate-300"
+        >
+          <span
+            class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
+          ></span>
+          Local Storage Active
+        </div>
       </div>
     </header>
 
     <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
-      <div
-        class="glass-card rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-indigo-950/40"
-      >
+      <!-- Top Metrics Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Total Balance Card -->
         <div
-          class="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl"
-        ></div>
-        <div
-          class="absolute -left-10 -bottom-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"
-        ></div>
-
-        <div class="relative z-10 text-center">
+          class="glass-card rounded-2xl p-6 md:col-span-2 relative overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none"
+        >
           <p
-            class="text-sm font-medium uppercase tracking-widest text-indigo-300"
+            class="text-xs font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400"
           >
             Total Balance
           </p>
+          <!-- PENYESUAIAN TEKS: Menggunakan text-slate-900 dan dark:text-white agar kontras di mode malam -->
           <h2
             id="total-balance"
-            class="text-5xl font-extrabold tracking-tight mt-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent"
+            class="text-4xl font-extrabold tracking-tight mt-1 text-slate-900 dark:text-white"
           >
             $0.00
           </h2>
+          <div
+            class="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-300/50 dark:border-slate-700/50 pt-3 text-xs text-slate-500 dark:text-slate-400"
+          >
+            <span>Highlight limit ($):</span>
+            <input
+              type="number"
+              id="limit-input"
+              value="100"
+              class="w-16 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-1.5 py-0.5 text-center font-bold text-rose-500 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <!-- Monthly Summary Card -->
+        <div
+          class="glass-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 dark:shadow-none"
+        >
+          <p
+            class="text-xs font-semibold uppercase tracking-widest text-pink-600 dark:text-pink-400"
+          >
+            Monthly Summary
+          </p>
+          <div class="mt-3 space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-500 dark:text-slate-400"
+                >This Month:</span
+              >
+              <!-- PENYESUAIAN TEKS: text-slate-900 dan dark:text-white -->
+              <span
+                id="current-month-total"
+                class="font-bold text-slate-900 dark:text-white"
+                >$0.00</span
+              >
+            </div>
+            <div
+              class="flex justify-between text-xs text-slate-400 dark:text-slate-500"
+            >
+              <span>Active Month:</span>
+              <span id="active-month-name" class="capitalize">May 2026</span>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- Middle Content Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <section class="lg:col-span-5">
+        <!-- Form Input Side -->
+        <section class="lg:col-span-5 space-y-6">
           <div
-            class="glass-card rounded-2xl p-6 shadow-xl h-full flex flex-col justify-between"
+            class="glass-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 dark:shadow-none"
           >
-            <div>
-              <h3
-                class="text-lg font-semibold text-white mb-5 flex items-center gap-2"
-              >
-                <i class="fa-solid fa-circle-plus text-indigo-400"></i> Add
-                Transaction
-              </h3>
+            <h3
+              class="text-lg font-semibold text-slate-900 dark:text-white mb-5 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-circle-plus text-indigo-500"></i> Add
+              Transaction
+            </h3>
 
-              <form id="transaction-form" class="space-y-4">
+            <form id="transaction-form" class="space-y-4">
+              <div>
+                <label
+                  class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5"
+                  >Item Name</label
+                >
+                <input
+                  type="text"
+                  id="item-name"
+                  required
+                  placeholder="e.g., Cilok Premium"
+                  class="w-full bg-white dark:bg-slate-900/60 border border-slate-300 dark:border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-xs font-medium text-slate-400 mb-1.5"
-                    >Item Name</label
+                  <label
+                    class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5"
+                    >Amount ($)</label
                   >
                   <input
-                    type="text"
-                    id="item-name"
+                    type="number"
+                    id="amount"
+                    step="0.01"
                     required
-                    placeholder="e.g., Cilok Premium"
-                    class="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    placeholder="0.00"
+                    class="w-full bg-white dark:bg-slate-900/60 border border-slate-300 dark:border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   />
                 </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      class="block text-xs font-medium text-slate-400 mb-1.5"
-                      >Amount ($)</label
-                    >
-                    <input
-                      type="number"
-                      id="amount"
-                      step="0.01"
-                      required
-                      placeholder="0.00"
-                      class="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="block text-xs font-medium text-slate-400 mb-1.5"
-                      >Category</label
-                    >
-                    <select
-                      id="category"
-                      required
-                      class="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-                    >
-                      <option value="Food">Food</option>
-                      <option value="Transport">Transport</option>
-                      <option value="Fun">Fun</option>
-                    </select>
-                  </div>
+                <div>
+                  <label
+                    class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5"
+                    >Category</label
+                  >
+                  <select
+                    id="category"
+                    required
+                    class="w-full bg-white dark:bg-slate-900/60 border border-slate-300 dark:border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                  ></select>
                 </div>
+              </div>
 
+              <button
+                type="submit"
+                class="w-full bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 text-white font-medium text-sm py-3 px-4 rounded-xl shadow-md hover:opacity-90 transition-all flex items-center justify-center gap-2"
+              >
+                <i class="fa-solid fa-bolt text-xs"></i> Add Transaction
+              </button>
+            </form>
+
+            <!-- Create Custom Category Section -->
+            <div
+              class="mt-6 border-t border-slate-300/50 dark:border-slate-700/50 pt-4"
+            >
+              <label
+                class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider"
+                >Create Custom Category</label
+              >
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  id="custom-cat-input"
+                  placeholder="New category name"
+                  class="flex-1 bg-white dark:bg-slate-900/40 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                />
                 <button
-                  type="submit"
-                  class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium text-sm py-3 px-4 rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all duration-200 mt-2 flex items-center justify-center gap-2"
+                  id="add-cat-btn"
+                  class="bg-slate-800 text-white dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-2 rounded-xl text-xs font-medium transition-all"
                 >
-                  <i class="fa-solid fa-bolt text-xs"></i> Add Transaction
+                  Add
                 </button>
-              </form>
+              </div>
             </div>
           </div>
         </section>
 
+        <!-- Chart Side -->
         <section class="lg:col-span-7">
-          <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <div
+            class="glass-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 dark:shadow-none h-full flex flex-col justify-between"
+          >
             <h3
-              class="text-lg font-semibold text-white mb-4 flex items-center gap-2"
+              class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2"
             >
-              <i class="fa-solid fa-chart-pie text-purple-400"></i> Spending by
-              Category
+              <i class="fa-solid fa-chart-pie text-purple-500"></i> Spending
+              Distribution
             </h3>
-            <div class="relative flex justify-center items-center h-64">
+            <div class="relative flex justify-center items-center h-64 my-auto">
               <canvas id="spending-chart"></canvas>
             </div>
           </div>
         </section>
       </div>
 
+      <!-- Recent Transactions -->
       <section class="w-full">
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3
-            class="text-lg font-semibold text-white mb-4 flex items-center gap-2"
+        <div
+          class="glass-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 dark:shadow-none"
+        >
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4"
           >
-            <i class="fa-solid fa-history text-pink-400"></i> Recent
-            Transactions
-          </h3>
+            <h3
+              class="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2"
+            >
+              <i class="fa-solid fa-history text-pink-500"></i> Recent
+              Transactions
+            </h3>
+
+            <div class="flex items-center gap-2">
+              <label
+                class="text-xs text-slate-500 dark:text-slate-400 font-medium"
+                >Sort By:</label
+              >
+              <select
+                id="sort-select"
+                class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500"
+              >
+                <option value="latest">Latest Added</option>
+                <option value="amount-desc">Amount: High to Low</option>
+                <option value="amount-asc">Amount: Low to High</option>
+                <option value="category">Category Name</option>
+              </select>
+            </div>
+          </div>
 
           <div
             id="transaction-list"
             class="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar"
           >
             <div
-              class="text-center py-10 text-slate-500 text-sm"
+              class="text-center py-10 text-slate-400 dark:text-slate-500 text-sm"
               id="empty-state"
             >
               <i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>

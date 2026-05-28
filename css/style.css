@@ -1,34 +1,95 @@
-/* Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap");
 
-/* Base Body Styling */
 body {
   font-family: "Plus Jakarta Sans", sans-serif;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  position: relative;
+  overflow-x: hidden;
+  background-color: #fafafa;
+  transition: background-color 0.5s ease;
 }
 
-/* Glassmorphism Premium Card Effect */
+/* Efek Animasi Siluet Hangat Dinamis (Hanya Aktif di Light Mode) */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(140px);
+  z-index: -1;
+  opacity: 0.45;
+  transition: all 0.5s ease;
+}
+
+body::before {
+  background: radial-gradient(
+    circle,
+    #ffedd5 0%,
+    #fed7aa 100%
+  ); /* Warna Oranye-Peach Hangat */
+  top: -20%;
+  right: -10%;
+  animation: floatBg 12s infinite alternate ease-in-out;
+}
+
+body::after {
+  background: radial-gradient(
+    circle,
+    #fef08a 0%,
+    #fde047 100%
+  ); /* Warna Kuning Hangat */
+  bottom: -10%;
+  left: -10%;
+  animation: floatBg 16s infinite alternate-reverse ease-in-out;
+}
+
+/* Ketika Masuk Mode Gelap, Matikan Siluet Hangat dan Ubah ke Gelap */
+.dark body {
+  background-color: #0f172a;
+}
+.dark body::before {
+  background: radial-gradient(circle, #1e1b4b 0%, #311042 100%);
+  opacity: 0.6;
+}
+.dark body::after {
+  background: radial-gradient(circle, #0f172a 0%, #1e1b4b 100%);
+  opacity: 0.6;
+}
+
+@keyframes floatBg {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(60px, 40px) scale(1.1);
+  }
+}
+
+/* Glassmorphism Adaptive Card */
 .glass-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.dark .glass-card {
   background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Custom Minimalist Scrollbar for Transaction List */
+/* Custom Minimalist Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(100, 116, 139, 0.2);
   border-radius: 10px;
 }
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
 }
